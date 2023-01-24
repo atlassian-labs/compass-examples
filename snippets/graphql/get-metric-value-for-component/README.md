@@ -2,7 +2,7 @@
 
 This query will retrieve all metric values for a given component.
 
-Simply replace `the-component-ari` below with a valid [Compass component ARI](https://developer.atlassian.com/cloud/compass/config-as-code/manage-components-with-config-as-code/#find-a-component-s-id) in your site and execute the query. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
+Simply replace `componentARI` below in the variables section with a valid [Compass component ARI](https://developer.atlassian.com/cloud/compass/config-as-code/manage-components-with-config-as-code/#find-a-component-s-id) in your site and execute the query. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
 
 ### Query
 ```graphql
