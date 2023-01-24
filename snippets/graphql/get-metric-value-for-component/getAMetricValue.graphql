@@ -25,3 +25,7 @@ query getAMetricValue {
     }
   }
 }
+
+{
+  "X-ExperimentalApi": ["compass-beta","compass-prototype"]
+}
