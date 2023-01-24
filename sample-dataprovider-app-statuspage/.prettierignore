@@ -1,0 +1,4 @@
+.artifactory/*
+ui/build
+ui/public
+src/generated

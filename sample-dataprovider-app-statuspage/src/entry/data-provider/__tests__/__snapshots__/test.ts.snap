@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`dataProvider module successfully returns events and metrics in the expected format 1`] = `
+Object {
+  "builtIn": Object {
+    "ari:cloud:compass::metric-definition/builtin/mttr-avg-last-10": Object {
+      "derived": true,
+      "initialValue": null,
+    },
+  },
+  "custom": undefined,
+}
+`;
+
+exports[`dataProvider module successfully returns events and metrics in the expected format 2`] = `
+Object {
+  "incidents": Object {
+    "initialValues": Array [
+      Object {
+        "description": "This incident has been resolved.",
+        "displayName": "test incident",
+        "endTime": "2023-01-20T20:49:52.049Z",
+        "id": "test",
+        "lastUpdated": "2023-01-20T20:49:52.072Z",
+        "severity": Object {
+          "label": "critical",
+          "level": "ONE",
+        },
+        "startTime": "2023-01-20T20:49:36.249Z",
+        "state": "RESOLVED",
+        "updateSequenceNumber": 1674257428214,
+        "url": "https://stspg.io/test",
+      },
+    ],
+  },
+}
+`;

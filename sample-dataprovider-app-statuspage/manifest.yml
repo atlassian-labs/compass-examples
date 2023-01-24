@@ -1,0 +1,55 @@
+modules:
+  compass:adminPage:
+    - key: admin-page-ui
+      resolver:
+        function: admin-resolver
+      resource: admin
+      title: Statuspage Test
+      icon: https://sp-compass-forge.s3.us-west-2.amazonaws.com/Statuspage_blue_80px.svg
+  compass:dataProvider:
+    - key: data-provider
+      function: data-provider-fn
+      callback:
+        function: callback-fn
+      domains:
+        - "*.statuspage.io"
+        - "*.status.atlassian.com"
+      linkTypes:
+        - other-link
+  webtrigger:
+    - key: handle-statuspage-event
+      function: process-sp-incident-fn
+  function:
+    - key: admin-resolver
+      handler: index.resolver
+    - key: process-sp-incident-fn
+      handler: index.processStatuspageIncidentEvent
+    - key: data-provider-fn
+      handler: index.dataProvider
+    - key: callback-fn
+      handler: index.callback
+app:
+  id: ari:cloud:ecosystem::app/8eaba005-7b7c-4069-bcae-e84741d3a7b1
+resources:
+  - key: admin
+    path: ui/build
+    tunnel:
+      port: 3001
+permissions:
+  scopes:
+    - read:component:compass
+    - storage:app
+    - read:component:compass
+    - write:component:compass
+    - read:event:compass
+    - write:event:compass
+    - read:metric:compass
+    - write:metric:compass
+  external:
+    fetch:
+      backend:
+        - "*.statuspage.io"
+        - "*.status.atlassian.com"
+  content:
+    styles:
+      - 'unsafe-inline'
