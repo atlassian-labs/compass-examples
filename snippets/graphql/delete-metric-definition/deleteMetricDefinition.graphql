@@ -1,0 +1,11 @@
+mutation deleteMetricDefinition($input: CompassDeleteMetricDefinitionInput!) {
+  compass {
+    deleteMetricDefinition(input: $input) {
+      deletedMetricDefinitionId
+      errors {
+        message
+      }
+      success
+    }
+  }
+}

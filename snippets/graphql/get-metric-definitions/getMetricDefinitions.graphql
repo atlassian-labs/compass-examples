@@ -1,0 +1,28 @@
+query getMetricDefinitions($query: CompassMetricDefinitionsQuery!) {
+  compass {
+    metricDefinitions(query: $query) {
+      ... on CompassMetricDefinitionsConnection {
+        nodes {
+          id
+          name
+          description
+          type
+          format {
+            ... on CompassMetricDefinitionFormatSuffix {
+              suffix
+            }
+          }
+          derivedEventTypes
+        }
+
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+
+      ... on QueryError {
+        ...CommonQueryError
+      }
+    }
+  }
