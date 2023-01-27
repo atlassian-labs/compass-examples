@@ -1,6 +1,6 @@
 # Compass Metrics and Events Statuspage Example (Custom UI)
 
-This project demonstrates how the webtrigger, compass:adminPage, and compass:dataProvider modules for Forge can work together to ingest metrics and events from an external source (Statuspage) to Compass.
+This project demonstrates how the webtrigger, compass:adminPage, and compass:dataProvider [modules for Forge](https://developer.atlassian.com/platform/forge/manifest-reference/modules/index-compass/) can work together to ingest metrics and events from an external source (Statuspage) to Compass. It can be used as a companion to the [“Create a data provider app for events and metrics” tutorial](https://developer.atlassian.com/cloud/compass/integrations/create-a-data-provider-app/). This sample shows you how to build on the tutorial by making real API calls to a third party service, [Atlassian Statuspage](https://www.atlassian.com/software/statuspage). 
 
 ## Getting Started
 
