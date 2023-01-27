@@ -17,8 +17,10 @@
 
 ## Handy links
 
+- [Get started integrating with Compass](https://developer.atlassian.com/cloud/compass/integrations/get-started-integrating-with-Compass/)
+- [Get a Compass site](https://www.atlassian.com/try/cloud/signup?bundle=compass) for development and testing
 - [Compass Forge modules](https://developer.atlassian.com/platform/forge/manifest-reference/modules/index-compass/)
-- [GraphQL API](https://developer.atlassian.com/cloud/compass/graphql/#queries_component)
+- [GraphQL API](https://developer.atlassian.com/cloud/compass/graphql/#overview)
 - [Compass Forge SDK](https://www.npmjs.com/package/@atlassian/forge-graphql)
 
 
