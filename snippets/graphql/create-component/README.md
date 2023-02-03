@@ -38,7 +38,7 @@ We are using "SERVICE" as a component type in the example below, to learn about 
       "cloudId": "your-cloud-id",
       "componentDetails": {
           "name": "<XYZ>",
-          "type": "SERVICE"
+          "typeId": "SERVICE"
         }
 }
 ```
