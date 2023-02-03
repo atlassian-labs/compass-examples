@@ -4,4 +4,5 @@ Here you will find a directory of code snippets that do various things in Compas
 
 | Example                                                                        | Description                                                                                                                                                                                                                     |
 | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Search components](search-components/README.md) | Searches components using various optional filters. Requires the cloudId of the site. |
+| [Search components](search-components/) | Searches components using various optional filters. Requires the cloudId of the site. |
+| [Get component scorecards with scores](get-component-scorecards-with-scores/) | Gets a list of scorecards applied to a component and their accompanying scores. |
