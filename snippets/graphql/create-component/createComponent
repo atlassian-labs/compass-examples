@@ -1,0 +1,11 @@
+mutation createComponent($cloudId: ID!, $componentDetails: CreateCompassComponentInput!) {
+  compass {
+    createComponent(cloudId: $cloudId, input: $componentDetails) {
+      success
+      componentDetails {
+        id
+        name
+        type
+      }    }
+  }
+}
