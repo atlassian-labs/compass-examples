@@ -1,8 +1,8 @@
 # How to use this
 
-This query will retrieve a list of metric definitions for your site.
+This query will create a component on your site.
 
-Replace `cloudId` below in the variables section with the cloudId for your site and execute the query. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
+Replace `cloudId` and `componentDetails` below in the variables section with the cloudId for your site and component information, and execute the query. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
 
 ### Query
 
@@ -14,7 +14,7 @@ mutation createComponent($cloudId: ID!, $componentDetails: CreateCompassComponen
       componentDetails {
         id
         name
-        type
+        typeId
       }    }
   }
 }
@@ -31,11 +31,10 @@ mutation createComponent($cloudId: ID!, $componentDetails: CreateCompassComponen
 
 ### Query Variables
 
-Type field could include following components - Service, Library, Application or Other. We are using "service" in the example below 
+We are using "SERVICE" as a component type in the example below, to learn about different component types, check this [link](https://developer.atlassian.com/cloud/compass/components/what-is-a-component/#component-types)
 
 ```
 {
-    "query": {
       "cloudId": "your-cloud-id",
       "componentDetails": {
           "name": "<XYZ>",

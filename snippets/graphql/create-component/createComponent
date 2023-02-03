@@ -5,7 +5,7 @@ mutation createComponent($cloudId: ID!, $componentDetails: CreateCompassComponen
       componentDetails {
         id
         name
-        type
+        typeId
       }    }
   }
 }
