@@ -10,9 +10,9 @@
 
 | Example | Description | 
 | ------- | ----------- |
-| [dataProvider + events + metrics sample app](apps/sample-dataprovider-app-statuspage/README.md) | A sample application that demonstrates how to use the [dataProvider module](https://developer.atlassian.com/platform/forge/manifest-reference/modules/compass-data-provider/) to create [event](https://developer.atlassian.com/cloud/compass/components/send-events-using-rest-api/) and [metric](https://developer.atlassian.com/cloud/compass/components/create-connect-and-view-component-metrics/) sources, then update events and metrics with a [webhook](https://developer.atlassian.com/platform/forge/manifest-reference/modules/web-trigger/). [Tutorial on creating a data provider app](https://developer.atlassian.com/cloud/compass/integrations/create-a-data-provider-app/).|
-| [GraphQL Snippets](snippets/graphql/README.md) | A collection of various GraphQL queries and mutations that have been helpful for customers. |
-| [Forge GraphQL SDK Snippets](snippets/forge-graphql-sdk/README.md) | A collection of various Forge GraphQL SDK usage examples. |
+| [dataProvider + events + metrics sample app](apps/sample-dataprovider-app-statuspage/) | A sample application that demonstrates how to use the [dataProvider module](https://developer.atlassian.com/platform/forge/manifest-reference/modules/compass-data-provider/) to create [event](https://developer.atlassian.com/cloud/compass/components/send-events-using-rest-api/) and [metric](https://developer.atlassian.com/cloud/compass/components/create-connect-and-view-component-metrics/) sources, then update events and metrics with a [webhook](https://developer.atlassian.com/platform/forge/manifest-reference/modules/web-trigger/). [Tutorial on creating a data provider app](https://developer.atlassian.com/cloud/compass/integrations/create-a-data-provider-app/).|
+| [GraphQL Snippets](snippets/graphql/) | A collection of various GraphQL queries and mutations that have been helpful for customers. |
+| [Forge GraphQL SDK Snippets](snippets/forge-graphql-sdk/) | A collection of various Forge GraphQL SDK usage examples. |
 | [GitLab app for Compass](https://github.com/atlassian-labs/gitlab-for-compass) | Not hosted in this repo but [the GitLab app for Compass is fully open source](https://github.com/atlassian-labs/gitlab-for-compass) and is a great "production ready" app to use as a reference.|
 
 ## Handy links
