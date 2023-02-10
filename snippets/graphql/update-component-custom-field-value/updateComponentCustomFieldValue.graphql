@@ -1,0 +1,44 @@
+mutation updateComponentCustomField($input: UpdateCompassComponentInput!) {
+  compass {
+    updateComponent(input: $input) {
+      success
+      errors {
+        message
+        extensions {
+          statusCode
+          errorType
+        }
+      }
+      componentDetails {
+        id
+        name
+        customFields {
+          definition {
+            id
+            name
+          }
+          ...on CompassCustomBooleanField {
+            booleanValue
+          }
+          ...on CompassCustomTextField {
+            textValue
+          }
+          ...on CompassCustomNumberField {
+            numberValue
+          }
+          ...on CompassCustomUserField {
+            userValue {
+              id
+              name
+              picture
+              accountId
+              canonicalAccountId
+              accountStatus
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
