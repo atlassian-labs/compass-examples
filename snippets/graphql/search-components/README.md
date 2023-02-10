@@ -1,6 +1,6 @@
 # How to use this
 
-This query will retrieve a paginate-able subset of components of a given type (SERVICE in this example).
+This query will retrieve a paginate-able subset of components with various filters, fuzzy querying, and sorting.
 
 Replace `cloudId` below in the variables section with the cloudId for your site and execute the query.. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
 
@@ -128,7 +128,7 @@ query searchCompassComponents($cloudId: String!, $query: CompassSearchComponentQ
 }
 ```
 
-##### Query Sorted by Value
+##### Query Sorted by Name Descending
 ```
 {
   "cloudId": "<cloud_id>",
