@@ -1,0 +1,62 @@
+query searchCompassComponents($cloudId: String!, $query: CompassSearchComponentQuery) {
+  compass {
+    searchComponents(cloudId: $cloudId, query: $query) {
+      ... on CompassSearchComponentConnection {
+        nodes {
+            link
+            component {
+              name
+              description
+              typeId
+              ownerId
+              links {
+                id
+                type
+                name
+                url
+              }
+              labels {
+                name
+              }
+              customFields {
+                definition {
+                  id
+                  name
+                }
+                ...on CompassCustomBooleanField {
+                  booleanValue
+                }
+                ...on CompassCustomTextField {
+                  textValue
+                }
+                ...on CompassCustomNumberField {
+                  numberValue
+                }
+                ...on CompassCustomUserField {
+                  userValue {
+                    id
+                    name
+                    picture
+                    accountId
+                    canonicalAccountId
+                    accountStatus
+                  }
+                }
+              }
+            }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+      ... on QueryError {
+        message
+        extensions {
+          statusCode
+          errorType
+        }
+      }
+    }
+  }
+}
