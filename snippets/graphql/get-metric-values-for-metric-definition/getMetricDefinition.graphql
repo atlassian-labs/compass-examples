@@ -1,0 +1,33 @@
+query getMetricDefinition ($cloudId: ID!, $metricDefinitionId: ID!){
+  compass {
+    metricDefinition(cloudId: $cloudId, metricDefinitionId: $metricDefinitionId) {
+      ... on CompassMetricDefinition {
+        id
+        name
+        metricSources {
+          ... on CompassMetricSourcesConnection {
+            nodes {
+              id
+              values {
+                ... on CompassMetricSourceValuesConnection {
+                  nodes {
+                    value
+                    timestamp
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
+                  }
+                }
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    }
+  }
+}
