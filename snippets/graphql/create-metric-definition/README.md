@@ -1,7 +1,7 @@
 # How to use this
 
 This query will create a metric defintion on your site.
-
+- Add suffix
 Replace `cloudId` and `name` below in the variables section with the cloudId for your site and the name for your metric definition, and execute the query. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
 
 ### Query

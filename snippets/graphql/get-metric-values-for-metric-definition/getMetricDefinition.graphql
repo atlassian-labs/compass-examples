@@ -20,6 +20,9 @@ query getMetricDefinition ($cloudId: ID!, $metricDefinitionId: ID!){
                   }
                 }
               }
+              component {
+                id
+              }
             }
             pageInfo {
               hasNextPage
