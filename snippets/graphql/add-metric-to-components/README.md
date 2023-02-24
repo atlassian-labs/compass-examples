@@ -6,9 +6,8 @@ This following steps can be used to add a metric for a subset or all components.
 
 3. For each component, call [createMetricSource](/snippets/graphql/create-metric-source/README.md) with the `metric_definition_id` to apply the metric definition. The `externalMetricSourceId` is an identifier of your metric source in an external system, for example, a Bitbucket repository UUID. 
 
+### Sample bash script
 ```
-
-
 query='mutation createMetricSource($input:CompassCreateMetricSourceInput!) { 
   compass { 
     createMetricSource( input: $input ) { 
