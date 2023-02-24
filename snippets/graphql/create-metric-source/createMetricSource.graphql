@@ -1,0 +1,16 @@
+mutation createMetricSource ($input:CompassCreateMetricSourceInput!){
+  compass {
+    createMetricSource(
+      input: $input
+    ) {
+      success
+      createdMetricSource {
+        title
+        id
+        metricDefinition {
+          id
+        }
+      }
+    }
+  }
+}

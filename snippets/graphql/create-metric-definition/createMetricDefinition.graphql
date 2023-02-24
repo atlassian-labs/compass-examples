@@ -1,0 +1,13 @@
+mutation createMetricDefinition ($input: CompassCreateMetricDefinitionInput!) {
+  compass {
+    createMetricDefinition(
+      input: $input
+    ) {
+      createdMetricDefinition {
+        id
+        name
+      }
+      success
+    }
+  }
+}
