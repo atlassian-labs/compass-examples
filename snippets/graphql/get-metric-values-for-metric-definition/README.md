@@ -1,4 +1,4 @@
-This query can be used to get all metric values for metric sources with a specified metric definition.
+This query can be used to get a paginateable list of metric values for metric sources with a specified metric definition.
 
 Replace `cloudId` and `metricDefinitionId` below in the variables section with the cloudId for your site and the metric definition ID, and execute the query. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
 ### Query
