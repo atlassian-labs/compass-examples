@@ -37,10 +37,10 @@ mutation createMetricDefinition ($input: CompassCreateMetricDefinitionInput!) {
 {
   "input": {
     "cloudId": "<cloud_id>",
-    "name": "<name of your metric definition>"
+    "name": "<name of your metric definition>",
     "format": {
       "suffix": {
-        "suffix": <the units of your metric>
+        "suffix": "<the units of your metric>"
       }
     }
   }
