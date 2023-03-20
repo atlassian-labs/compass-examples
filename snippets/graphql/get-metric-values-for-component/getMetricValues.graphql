@@ -1,6 +1,6 @@
-query getAMetricValue {
+query getAMetricValue($componentID) {
   compass {
-    component(id: "the-component-ari") {
+    component(id: $componentID) {
       ... on CompassComponent {
         metricSources(query: { first: 10 }) {
           ... on CompassComponentMetricSourcesConnection {
