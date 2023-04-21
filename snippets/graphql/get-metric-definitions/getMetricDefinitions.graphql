@@ -14,15 +14,15 @@ query getMetricDefinitions($query: CompassMetricDefinitionsQuery!) {
           }
           derivedEventTypes
         }
-
         pageInfo {
           hasNextPage
           endCursor
         }
       }
-
       ... on QueryError {
-        ...CommonQueryError
+        identifier
+        message
       }
     }
   }
+}
