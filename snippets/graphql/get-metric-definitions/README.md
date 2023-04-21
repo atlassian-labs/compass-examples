@@ -31,12 +31,12 @@ query getMetricDefinitions($query: CompassMetricDefinitionsQuery!) {
       }
 
       ... on QueryError {
-        ...CommonQueryError
+        identifier
+        message
       }
     }
   }
 }
-
 ```
 
 ### Query Headers
@@ -48,6 +48,8 @@ query getMetricDefinitions($query: CompassMetricDefinitionsQuery!) {
 ```
 
 ### Query Variables
+
+Exclude `after` variable on first run.
 
 ```
 { 
