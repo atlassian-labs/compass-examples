@@ -1,0 +1,9 @@
+mutation deleteMetricSource ($input:CompassDeleteMetricSourceInput!){
+  compass {
+    deleteMetricSource(
+      input: $input
+    ) {
+      success
+    }
+  }
+}
