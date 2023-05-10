@@ -14,6 +14,7 @@ Depending on what type the custom field's values are, choose the correct input t
 
 You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
 
+Refer to `update-components.sh` for a sample bash script using this mutation.
 ### Mutation
 
 ```graphql
