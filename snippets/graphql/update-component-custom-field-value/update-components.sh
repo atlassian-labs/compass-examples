@@ -1,6 +1,6 @@
 ##
-# This is a sample bash script that can be used to update a list of components.
-# Replace <your-cloud-id> and <your-api-key> and <list-of-your-component-ids> with your own values. 
+# This is a sample bash script that can be used to update custom fields for a list of components.
+# Replace <your-cloud-id> <your-api-key> <list-of-component-ids> and <your-custom-field-definition-id> with your own values. 
 ##
 query='mutation updateComponentCustomField($input: UpdateCompassComponentInput!) {
   compass {
@@ -38,7 +38,7 @@ for id in <list-of-component-ids>; do
       \"id\": \"$id\",
       \"customFields\": [{
         \"textField\": {
-          \"definitionId\": \"ari:cloud:compass:55a49325-e8ef-4987-81ca-5979fe159c3c:custom-field-definition/65431be5-fcf3-4914-b8ae-123e8e2b405b/ed5dfc29-67bb-4ddb-868b-b76228d12e1c\",
+          \"definitionId\": \"<your-custom-field-definition-id>\",
           \"textValue\": \"false\"
         }
       }]

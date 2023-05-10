@@ -1,7 +1,7 @@
 ##
 # This is a sample bash script that can be used to run the searchComponents query to retrieve 
 # all components of type service. 
-# Replace <your-cloud-id> and <your-api-key> with your own values. 
+# Replace <your-cloud-id> and <your-api-key> with your own values and adjust the search critera (fieldFilters) as needed. 
 ##
 query='query searchCompassComponents($cloudId: String!, $query: CompassSearchComponentQuery) {
   compass {

@@ -4,6 +4,7 @@ This query will retrieve a paginate-able subset of components with various filte
 
 Replace `cloudId` below in the variables section with the cloudId for your site and execute the query.. You can use [the GraphQL explorer](https://developer.atlassian.com/cloud/compass/graphql/explorer/) to run this query and explore [the Compass API](https://developer.atlassian.com/cloud/compass/graphql/) further.
 
+Refer to `search-components.sh` for a sample bash script using this mutation.
 ### Query
 
 ```graphql
