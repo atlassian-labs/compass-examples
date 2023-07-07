@@ -41,7 +41,7 @@ mutation createComponent($cloudId: ID!, $componentDetails: CreateCompassComponen
 
 ```
 {
-      "cloudId": "cloud-id",
+      "cloudId": "<cloud-id>",
       "componentDetails": {
           "name": "<template-name>",
           "links": {
