@@ -23,7 +23,8 @@ mutation createComponent($cloudId: ID!, $componentDetails: CreateCompassComponen
         id
         name
         typeId
-      }    }
+      }    
+    }
   }
 }
 

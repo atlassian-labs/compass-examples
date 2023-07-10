@@ -6,6 +6,7 @@ mutation createTemplate($cloudId: ID!, $componentDetails: CreateCompassComponent
         id
         name
         typeId
-      }    }
+      }    
+    }
   }
 }
