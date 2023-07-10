@@ -4,11 +4,11 @@ This query will create a template on your site that can be used to quickly creat
 
 Replace the following variables in the variables section below, and execute the query.
 
-`cloud-id` - the cloudId for your site and component information.
+`cloud-id` - The cloudId for your site and component information.
 
-`template-name` - the name of the template
+`template-name` - The name of the template
 
-`repository-url` - the repository that hosts the template code which will be forked for components created from this template (currently only Github is supported)
+`repository-url` - The repository that hosts the template code which will be forked for components created from this template (currently only Github is supported). Required for template creation.
 
 Ensure that the typeId is "TEMPLATE". You may also specify any other `componentDetails` that you may want for the template such as owner team or description.
 
