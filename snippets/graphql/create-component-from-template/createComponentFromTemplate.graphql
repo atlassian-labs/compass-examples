@@ -1,0 +1,15 @@
+mutation createComponentFromTemplate($input: CreateCompassComponentFromTemplateInput!) {
+  compass @optIn(to: ["compass-beta"]) {
+    createComponentFromTemplate(input: $input) {
+      success
+
+      componentDetails {
+        ...CompassComponentCore
+      }
+
+      errors {
+        ...CommonMutationError
+      }
+    }
+  }
+}
