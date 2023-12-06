@@ -1,3 +1,7 @@
+##
+# This is a script that will retrieve all component IDs and write them to a file "component_ids.txt".
+# Make sure to replace api_token, email, and cloudId with your own values.
+##
 import base64
 import requests
 import json

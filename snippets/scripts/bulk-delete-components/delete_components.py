@@ -1,3 +1,8 @@
+##
+# This is a script that will delete all components from a file "component_ids.txt" or a list of component IDs specified in the script.
+# Make sure to replace api_token and email with your own values.
+##
+
 import base64
 import requests
 
