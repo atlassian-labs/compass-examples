@@ -10,24 +10,11 @@ query='query searchCompassComponents($cloudId: String!, $query: CompassSearchCom
         nodes {
             component {
               id
-              customFields {
-                definition {
-                  id
-                  name
-                }
-              }
             }
         }
         pageInfo {
           hasNextPage
           endCursor
-        }
-      }
-      ... on QueryError {
-        message
-        extensions {
-          statusCode
-          errorType
         }
       }
     }
@@ -49,14 +36,27 @@ variables='{
   }
 }'
 
-response=$(curl https://api.atlassian.com/graphql \
--X POST \
--H "Content-Type: application/json" \
--H "Authorization: Basic <your-api-key>" \
--H "X-ExperimentalApi: compass-beta, compass-prototype" \
--d "{ \"query\":\"$query\", \"variables\": $variables }")
+api_token="<your-api-token>"
+email="<your-email>"
+auth_header="${email}:${api_token}"
+encoded_auth_header=$(echo -n "${auth_header}" | base64)
 
-echo $response
-for id in $(echo "$response" | jq -r '.data.compass.searchComponents.nodes[].component.id'); do
-  echo "$id"
+hasNextPage=true
+while [ "$hasNextPage" = true ]
+do response=$(curl https://api.atlassian.com/graphql \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Basic $encoded_auth_header" \
+    -d "{ \"query\":\"$query\", \"variables\": $variables }")
+
+    for id in $(echo "$response" | jq -r '.data.compass.searchComponents.nodes[].component.id'); do
+        echo "$id"
+    done
+
+    hasNextPage=$(echo "$response" | jq -r '.data.compass.searchComponents.pageInfo.hasNextPage')
+    if [ "$hasNextPage" = true ]
+    then
+        endCursor=$(echo "$response" | jq -r '.data.compass.searchComponents.pageInfo.endCursor')
+        variables=$(echo "$variables" | jq --arg endCursor "$endCursor" '.query.after = $endCursor')
+    fi
 done
