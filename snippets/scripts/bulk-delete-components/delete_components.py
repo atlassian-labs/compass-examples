@@ -58,11 +58,15 @@ for component_id in component_ids:
         # Handle the response as needed
         data = response.json()
         deleted_component_id = data.get("data", {}).get("compass", {}).get("deleteComponent", {}).get("deletedComponentId")
+        errors = data.get("data", {}).get("compass", {}).get("deleteComponent", {}).get("errors")
 
         if deleted_component_id:
             print(f"Component with ID {deleted_component_id} deleted successfully")
             components_deleted += 1
         else:
             print(f"Failed to delete component with ID {component_id}")
+            if errors:
+              for error in errors:
+                print(f"Error message: {error.get('message')} Status code: {error.get('extensions', {}).get('statusCode')}")
 
-print(f"Components deleted: {components_deleted} dry_run: {dry_run}")
+print(f"Number of components { 'to be deleted' if dry_run else 'deleted' }: {components_deleted}, dry_run: {dry_run}")
