@@ -48,6 +48,5 @@ for id in <list-of-component-ids>; do
   -X POST \
   -H "Content-Type: application/json" \
   -H "Authorization: Basic <your-api-key>" \
-  -H "X-ExperimentalApi: compass-beta, compass-prototype" \
   -d "{ \"query\":\"$query\", \"variables\": $variables }"
 done
