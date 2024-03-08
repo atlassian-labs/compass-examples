@@ -1,0 +1,38 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: compass-test-app
+  title: Compass Test App
+  description: This API enables CRUD operations on the Compass Test App
+  labels:
+    tier: "2"
+  links:
+    - url: https://bitbucket.org/atlassian-test/compass-test-repo
+      title: Repository Link
+      type: source
+    - url: https://atlassian-test.com/wiki/pages/104862234987/How+Your+App+is+Architected
+      title: Confluence
+      type: docs
+    - url: https://bitbucket.org/atlassian-test/compass-test-repo/pipelines/results/page/1
+      title: Bitbucket Pipelines
+      type: ci
+    - url: https://example.com/app#/projects/compass-test-repo/deployments
+      title: Octopus
+      type: cd
+    - url: https://atlassian-test.signalfx.com/#/dashboard/FNx234coD8A0AA
+      title: SignalFX
+      type: dashboard
+    - url: https://splunk/logs
+      title: Splunk
+      type: logs
+spec:
+  type: service
+  lifecycle: beta
+  owner: compass-platform-team
+  system: api-compass
+  providesApis:
+    - API:compass-test-app
+  consumesApis:
+    - API:entities-api
+  dependsOn:
+    - Component:entities-api

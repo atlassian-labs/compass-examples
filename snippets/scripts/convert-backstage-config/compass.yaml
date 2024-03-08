@@ -1,0 +1,26 @@
+configVersion: 1
+description: This API enables CRUD operations on the Compass Test App
+fields:
+  lifecycle: Pre-Release
+  tier: 2
+links:
+- name: Repository Link
+  type: REPOSITORY
+  url: https://bitbucket.org/atlassian-test/compass-test-repo
+- name: Confluence
+  type: DOCUMENT
+  url: https://atlassian-test.com/wiki/pages/104862234987/How+Your+App+is+Architected
+- name: Bitbucket Pipelines
+  type: DASHBOARD
+  url: https://bitbucket.org/atlassian-test/compass-test-repo/pipelines/results/page/1
+- name: Octopus
+  type: DASHBOARD
+  url: https://example.com/app#/projects/compass-test-repo/deployments
+- name: SignalFX
+  type: DASHBOARD
+  url: https://atlassian-test.signalfx.com/#/dashboard/FNx234coD8A0AA
+- name: Splunk
+  type: DASHBOARD
+  url: https://splunk/logs
+name: compass-test-app
+typeId: SERVICE
