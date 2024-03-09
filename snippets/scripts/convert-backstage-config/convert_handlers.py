@@ -115,11 +115,26 @@ def handle_type(value):
     return component_type_mappings.get(value.lower(), "SERVICE")
 
 
+def handle_labels(value):
+    """
+    Convert the labels from Backstage to Compass format.
+
+    :param value: The list of tags from Backstage.
+    :return: The labels in Compass format.
+    """
+    # Tagging all components as imported from Backstage
+    value += ["imported:backstage"]
+
+    # Compass has a limit of 10 labels per component
+    return value[:10]
+
+
 FIELD_HANDLERS = {
     "handle_name": handle_name,
     "handle_description": handle_description,
     "handle_lifecycle": handle_lifecycle,
     "handle_links": handle_links,
     "handle_tier": handle_tier,
-    "handle_type": handle_type
+    "handle_type": handle_type,
+    "handle_labels": handle_labels,
 }
