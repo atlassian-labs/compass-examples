@@ -122,8 +122,8 @@ def handle_labels(value):
     :param value: The list of tags from Backstage.
     :return: The labels in Compass format.
     """
-    # Tagging all components as imported from Backstage
-    value += ["imported:backstage"]
+    # Tagging all components as imported from Backstage and truncating the labels to 40 characters
+    value = [v[:40] for v in value if v is not None] + ["imported:backstage"]
 
     # Compass has a limit of 10 labels per component
     return value[:10]
