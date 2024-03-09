@@ -21,6 +21,7 @@ MAPPINGS = {
     "metadata.description": {"path": "description", "handler": "handle_description"},
     "metadata.labels.tier": {"path": "fields.tier", "handler": "handle_tier"},
     "metadata.links": {"path": "links", "handler": "handle_links"},
+    "metadata.tags": {"path": "labels", "handler": "handle_labels"},
     "spec.lifecycle": {"path": "fields.lifecycle", "handler": "handle_lifecycle"},
     "spec.type": {"path": "typeId", "handler": "handle_type"},
 }
@@ -64,7 +65,8 @@ def map_properties(input_data):
     # Start with default config data
     output_data = {
         "configVersion": 1,
-        "fields": {}
+        "fields": {},
+        "labels": ["imported:backstage"]
     }
 
     for input_path, output_info in MAPPINGS.items():

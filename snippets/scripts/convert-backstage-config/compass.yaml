@@ -3,6 +3,10 @@ description: This API enables CRUD operations on the Compass Test App
 fields:
   lifecycle: Pre-Release
   tier: 2
+labels:
+- compass
+- test-app
+- imported:backstage
 links:
 - name: Repository Link
   type: REPOSITORY

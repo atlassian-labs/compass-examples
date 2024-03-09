@@ -6,6 +6,9 @@ metadata:
   description: This API enables CRUD operations on the Compass Test App
   labels:
     tier: "2"
+  tags:
+    - compass
+    - test-app
   links:
     - url: https://bitbucket.org/atlassian-test/compass-test-repo
       title: Repository Link
