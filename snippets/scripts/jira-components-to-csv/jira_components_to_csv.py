@@ -37,6 +37,6 @@ for project_key in project_keys:
 # Convert the data to a pandas DataFrame
 df = pd.DataFrame(all_data)
 
-# Write the DataFrame to an Excel file
-df.to_excel('output_component.xlsx', index=False)
-print('Written to output_component.xlsx')
+# Write the DataFrame to an CSV file
+df.to_csv('output_component.csv', index=False)
+print('Written to output_component.csv')
