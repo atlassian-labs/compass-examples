@@ -1,6 +1,7 @@
 # Usage
 
 This Python script will grab all Jira components from a user-defined selection of Jira projects.
+This script will process a maximum of 1000 components.
 
 # Getting started
 
