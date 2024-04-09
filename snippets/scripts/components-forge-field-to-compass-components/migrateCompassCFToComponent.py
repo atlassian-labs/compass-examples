@@ -68,14 +68,14 @@ def get_custom_field(fields, custom_field_name):
     compass_jira_forge_field_key_part = "compass-jira-integration-custom-field"
     custom_field = [field for field in fields if
                    (field["name"] == custom_field_name) and (compass_jira_forge_field_key_part in field["key"])]
-    if (len(custom_field) > 0):
+    if len(custom_field) > 0:
         formatted_custom_field = IssueCustomFieldMetadata(custom_field[0]["schema"]["customId"], custom_field[0]["name"],
                                                        custom_field[0]["key"], custom_field[0]["fieldId"])
         return formatted_custom_field
     else:
         print(
-            f"Your site cannot find custom field name as {custom_field_name}. Please check whether you have Compass "
-            f"custom field in the issue settings.")
+            f"Your site doesn't seem to have custom field name as {custom_field_name}. Please check whether you have Compass "
+            f"custom field enabled in the issue settings.")
         quit()
 
 
@@ -225,6 +225,8 @@ if __name__ == '__main__':
     check_input(DOMAIN_NAME, "domain")
     USER_NAME = input("Enter your email address : ").strip()
     check_input(USER_NAME, "userName")
+    print("Learn how to create an API token: "
+          "https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/ ")
     API_TOKEN = getpass.getpass("Enter your API token: ").strip()
     check_input(API_TOKEN, "apiToken")
     PROJECT_KEY = input("Enter your project key : ").strip()

@@ -6,25 +6,36 @@ In addition, we need you prepare the API token for your Atlassian account. Learn
 
 ## Local environment setup
 Install Python3
-`brew install python3`
-
+```shell
+brew install python3
+```
 Install PIP3 command
-`python3 -m pip install --upgrade pip`
+```shell
+python3 -m pip install --upgrade pip
+```
 
 Ensure you have a working python and pip:
-`python3 --version`
-`python3 -m pip --version`
+```
+python3 --version
+python3 -m pip --version
+```
 
 Install requests module
-`pip3 install -r requirements.txt`
+```shell
+pip3 install -r requirements.txt
+```
 
 ## How to run locally
 First run file jiraProjectsInfo.py to collect your site's projects info. 
 Please save the projects' keys.
-`python3 ./jiraProjectsInfo.py`
+```shell
+python3 ./jiraProjectsInfo.py
+```
 
 Second run file migrateCompassCFToComponent.py to migrate CompassCF to component field in all related issues in the project you want.  
-`python3 ./migrateCompassCFToComponent.py`
+```shell
+python3 ./migrateCompassCFToComponent.py
+```
 
 ## Other Useful Links
 https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-group-projects
