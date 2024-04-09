@@ -4,7 +4,7 @@ import requests
 import datetime
 import pandas as pd
 
-Replace with your email, API token, site URL, and Jira project keys
+# Replace with your email, API token, site URL, and Jira project keys
 email = "your-email"
 api_token = "your-api-token"
 site_url = "your-site-url" # desired format: my-cool-site.atlassian.net
