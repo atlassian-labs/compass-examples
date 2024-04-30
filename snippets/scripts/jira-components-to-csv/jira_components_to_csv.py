@@ -32,9 +32,19 @@ else:
         if response.status_code == 200:
             data = response.json()
             for component in data:
+                project_key_value = project_key
+                component_name = component['name']
+                description = f"Jira component from the project {project_key_value}"
+
                 all_data.append({
-                    'project_key': project_key,
-                    'component_name': component['name']
+                    'name': component_name,
+                    'type': '',
+                    'lifecycle stage': '',
+                    'tier': '',
+                    'description': description,
+                    'labels': '',
+                    'owner team': '',
+                    'repositories': ''
                 })
                 if len(all_data) == 1000:
                     break
