@@ -37,6 +37,10 @@ class Component:
         self.compass_component_version = compass_component_version
 
 
+# Global Variable
+maxResults = 100
+
+
 # Utility Functions
 # Check whether the input is empty string or not
 def check_input(input_string, input_type):
@@ -116,10 +120,11 @@ def get_custom_field(fields, custom_field_name):
         quit()
 
 
-def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id):
+def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at, max_results):
     url = (
             domain_name
-            + f"/rest/api/3/search?jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
+            + f"/rest/api/3/search?"
+              f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
     )
     auth = HTTPBasicAuth(user_name, api_token)
     headers = {"Accept": "application/json"}
@@ -254,7 +259,7 @@ def main():
 
     # Step2: Get the list of related issues that contains the custom field values
     issues = get_related_issues(
-        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid
+        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, 0, maxResults
     )
     issue_count = issues["total"]
 
@@ -266,6 +271,17 @@ def main():
         formatted_issues_dict = get_formatted_issues(
             issues["issues"], compass_custom_field_fieldid
         )
+        # Loop through pagination requests to get all issues
+        number_loop = issue_count // maxResults
+        for i in range(0, number_loop):
+            start_at = (i + 1) * maxResults
+            cur_issues = get_related_issues(
+                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at, maxResults
+            )
+            cur_formatted_issues_dict = get_formatted_issues(
+                cur_issues["issues"], compass_custom_field_fieldid
+            )
+            formatted_issues_dict.update(cur_formatted_issues_dict)
     else:
         print(
             f"The project: {PROJECT_KEY} doesn't have issues related to Compass custom fields."
