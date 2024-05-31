@@ -38,7 +38,7 @@ class Component:
 
 
 # Global Variable
-maxResults = 100
+max_results = 100
 
 
 # Utility Functions
@@ -120,11 +120,11 @@ def get_custom_field(fields, custom_field_name):
         quit()
 
 
-def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at, max_results):
+def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at, project_key):
     url = (
             domain_name
             + f"/rest/api/3/search?"
-              f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
+              f"&startAt={start_at}&maxResults={max_results}&jql=project={project_key}%20AND%20cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
     )
     auth = HTTPBasicAuth(user_name, api_token)
     headers = {"Accept": "application/json"}
@@ -259,7 +259,7 @@ def main():
 
     # Step2: Get the list of related issues that contains the custom field values
     issues = get_related_issues(
-        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, 0, maxResults
+        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, 0, PROJECT_KEY
     )
     issue_count = issues["total"]
 
@@ -272,11 +272,11 @@ def main():
             issues["issues"], compass_custom_field_fieldid
         )
         # Loop through pagination requests to get all issues
-        number_loop = issue_count // maxResults
+        number_loop = issue_count // max_results
         for i in range(0, number_loop):
-            start_at = (i + 1) * maxResults
+            start_at = (i + 1) * max_results
             cur_issues = get_related_issues(
-                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at, maxResults
+                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at, PROJECT_KEY
             )
             cur_formatted_issues_dict = get_formatted_issues(
                 cur_issues["issues"], compass_custom_field_fieldid
@@ -311,7 +311,7 @@ def main():
         )
 
     print(
-        f"Successfully copied issues’ Compass custom field values to their Components field.\n"
+        f"Successfully copied issues’ Compass custom field values to their Components field in Project {PROJECT_KEY}.\n"
     )
 
 
