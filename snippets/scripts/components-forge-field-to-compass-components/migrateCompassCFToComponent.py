@@ -121,41 +121,19 @@ def get_custom_field(fields, custom_field_name):
 
 
 # Get all issues with Compass custom field values, so that we can in the end migration all in once.
-def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at):
-    url = (
-            domain_name
-            + f"/rest/api/3/search?"
-              f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
-    )
-    auth = HTTPBasicAuth(user_name, api_token)
-    headers = {"Accept": "application/json"}
-
-    try:
-        response = requests.get(url, auth=auth, headers=headers)
-        if response.ok:
-            return response.json()
-    except HTTPError as http_err:
-        print(
-            f"Couldn't retrieve issues with Compass custom field due to an HTTP error. Please try again."
+def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at, project_key):
+    if project_key is None or project_key == '':
+        url = (
+                domain_name
+                + f"/rest/api/3/search?"
+                  f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
         )
-        quit()
-    except Exception as err:
-        print(
-            f"Couldn't retrieve issues with Compass custom field due to an unknown error. Please try again."
+    else:
+        url = (
+                domain_name
+                + f"/rest/api/3/search?"
+                  f"&startAt={start_at}&maxResults={max_results}&jql=project={project_key}%20AND%20cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
         )
-        quit()
-
-
-# Get all issues with Compass custom field values by given project_key.
-# So that we will migrate issues only in the given project.
-# Customer can use either get_related_issues or get_related_issues_with_given_project_key to fit for the needs.
-def get_related_issues_with_given_project_key(
-        domain_name, user_name, api_token, custom_field_custom_id, start_at, project_key):
-    url = (
-            domain_name
-            + f"/rest/api/3/search?"
-              f"&startAt={start_at}&maxResults={max_results}&jql=project={project_key}%20AND%20cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
-    )
     auth = HTTPBasicAuth(user_name, api_token)
     headers = {"Accept": "application/json"}
 
@@ -288,8 +266,12 @@ def main():
     compass_custom_field_fieldid = compass_formatted_custom_field.field_id
 
     # Step2: Get the list of related issues that contains the custom field values
+    # project_key is an optional field here.
+    # By default, we set empty which means you can migrate the issues cross all projects.
+    # If you want to migrate custom fields on single project,
+    # you can put PROJECT_KEY instead of empty string in last variable.
     issues = get_related_issues(
-        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, 0
+        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, 0, ''
     )
     issue_count = issues["total"]
 
@@ -306,7 +288,7 @@ def main():
         for i in range(0, number_loop):
             start_at = (i + 1) * max_results
             cur_issues = get_related_issues(
-                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at
+                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at, ''
             )
             cur_formatted_issues_dict = get_formatted_issues(
                 cur_issues["issues"], compass_custom_field_fieldid
