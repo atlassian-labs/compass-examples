@@ -50,7 +50,7 @@ def check_input(input_string, input_type):
 
 
 def check_for_migration_preference(preference):
-    if preference == 'N':
+    if preference == '1':
         print(f"We will start migrating Compass custom fields only on current project: {PROJECT_KEY}.")
         return False
     else:
@@ -350,9 +350,9 @@ if __name__ == "__main__":
     check_input(API_TOKEN, "apiToken")
     PROJECT_KEY = input("Enter your project key : ").strip()
     check_input(PROJECT_KEY, "projectKey")
-    PREFERENCE_FOR_ALL_OR_ONE_PROJECT = input(("Do you want to migrate Compass custom field values all in once? "
-                                               "If so, please enter Y. "
-                                               "Otherwise, please enter N:  ")).strip()
+    preference_prompt = (f"Enter an option to select which issues to migrate:\n1. Only the issues in {PROJECT_KEY}. \n"
+                         f"2. All issues.\n Enter 1 or 2:  ")
+    PREFERENCE_FOR_ALL_OR_ONE_PROJECT = input(preference_prompt).strip()
 
     IS_ALL_OR_ONE_PROJECT = check_for_migration_preference(PREFERENCE_FOR_ALL_OR_ONE_PROJECT)
 
