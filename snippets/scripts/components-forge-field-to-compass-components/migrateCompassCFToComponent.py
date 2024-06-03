@@ -38,7 +38,7 @@ class Component:
 
 
 # Global Variable
-maxResults = 100
+max_results = 100
 
 
 # Utility Functions
@@ -47,6 +47,15 @@ def check_input(input_string, input_type):
     if not bool(input_string):
         print("Please provide a valid " + input_type + ".")
         quit()
+
+
+def check_for_migration_preference(preference):
+    if preference == '1':
+        print(f"We will start migrating Compass custom fields only on current project: {PROJECT_KEY}.")
+        return False
+    else:
+        print("We will start migrating Compass custom fields for the whole site.")
+        return True
 
 
 def get_project_issue_type_ids(domain_name, user_name, api_token, project_key):
@@ -120,12 +129,20 @@ def get_custom_field(fields, custom_field_name):
         quit()
 
 
-def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at, max_results):
-    url = (
-            domain_name
-            + f"/rest/api/3/search?"
-              f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
-    )
+# Get all issues with Compass custom field values, so that we can in the end migration all in once.
+def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at):
+    if IS_ALL_OR_ONE_PROJECT:
+        url = (
+                domain_name
+                + f"/rest/api/3/search?"
+                  f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
+        )
+    else:
+        url = (
+                domain_name
+                + f"/rest/api/3/search?"
+                  f"&startAt={start_at}&maxResults={max_results}&jql=project={PROJECT_KEY}%20AND%20cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
+        )
     auth = HTTPBasicAuth(user_name, api_token)
     headers = {"Accept": "application/json"}
 
@@ -258,25 +275,29 @@ def main():
     compass_custom_field_fieldid = compass_formatted_custom_field.field_id
 
     # Step2: Get the list of related issues that contains the custom field values
+    # project_key is an optional field here.
+    # By default, we set empty which means you can migrate the issues cross all projects.
+    # If you want to migrate custom fields on single project,
+    # you can put PROJECT_KEY instead of empty string in last variable.
     issues = get_related_issues(
-        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, 0, maxResults
+        DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, 0
     )
     issue_count = issues["total"]
 
     if issue_count > 0:
         print(
-            f"Successfully retrieved {issue_count} issues in {PROJECT_KEY} project that have a Compass custom field "
+            f"Successfully retrieved {issue_count} issues that have a Compass custom field "
             f"value.\n"
         )
         formatted_issues_dict = get_formatted_issues(
             issues["issues"], compass_custom_field_fieldid
         )
         # Loop through pagination requests to get all issues
-        number_loop = issue_count // maxResults
+        number_loop = issue_count // max_results
         for i in range(0, number_loop):
-            start_at = (i + 1) * maxResults
+            start_at = (i + 1) * max_results
             cur_issues = get_related_issues(
-                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at, maxResults
+                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at
             )
             cur_formatted_issues_dict = get_formatted_issues(
                 cur_issues["issues"], compass_custom_field_fieldid
@@ -311,7 +332,7 @@ def main():
         )
 
     print(
-        f"Successfully copied issues’ Compass custom field values to their Components field.\n"
+        f"Successfully copied issues’ Compass custom field values to their Components field in Project.\n"
     )
 
 
@@ -329,6 +350,12 @@ if __name__ == "__main__":
     check_input(API_TOKEN, "apiToken")
     PROJECT_KEY = input("Enter your project key : ").strip()
     check_input(PROJECT_KEY, "projectKey")
+    preference_prompt = (f"Enter an option to select which issues to migrate:\n1. Only the issues in {PROJECT_KEY}. \n"
+                         f"2. All issues.\n Enter 1 or 2:  ")
+    PREFERENCE_FOR_ALL_OR_ONE_PROJECT = input(preference_prompt).strip()
+
+    IS_ALL_OR_ONE_PROJECT = check_for_migration_preference(PREFERENCE_FOR_ALL_OR_ONE_PROJECT)
+
     print("\n")
 
     main()
