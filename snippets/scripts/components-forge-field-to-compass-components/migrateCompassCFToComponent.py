@@ -5,6 +5,7 @@ import json
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import HTTPError
+from datetime import datetime
 
 
 # Define Issue Custom Field Metadata Object
@@ -50,8 +51,10 @@ def check_input(input_string, input_type):
 
 
 def check_for_migration_preference(preference):
-    if preference == '1':
-        print(f"We will start migrating Compass custom fields only on current project: {PROJECT_KEY}.")
+    if preference == "1":
+        print(
+            f"We will start migrating Compass custom fields only on current project: {PROJECT_KEY}."
+        )
         return False
     else:
         print("We will start migrating Compass custom fields for the whole site.")
@@ -80,11 +83,11 @@ def get_project_issue_type_ids(domain_name, user_name, api_token, project_key):
 
 
 def get_project_issue_type_metadata(
-        domain_name, user_name, api_token, project_key, issue_type_id
+    domain_name, user_name, api_token, project_key, issue_type_id
 ):
     url = (
-            domain_name
-            + f"/rest/api/3/issue/createmeta/{project_key}/issuetypes/{issue_type_id}"
+        domain_name
+        + f"/rest/api/3/issue/createmeta/{project_key}/issuetypes/{issue_type_id}"
     )
     auth = HTTPBasicAuth(user_name, api_token)
     headers = {"Accept": "application/json"}
@@ -133,15 +136,13 @@ def get_custom_field(fields, custom_field_name):
 def get_related_issues(domain_name, user_name, api_token, custom_field_custom_id, start_at):
     if IS_ALL_OR_ONE_PROJECT:
         url = (
-                domain_name
-                + f"/rest/api/3/search?"
-                  f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
+            domain_name + f"/rest/api/3/search?"
+            f"&startAt={start_at}&maxResults={max_results}&jql=cf%5B{custom_field_custom_id}%5D%20is%20not%20empty%20ORDER%20BY%20key%20DESC"
         )
     else:
         url = (
-                domain_name
-                + f"/rest/api/3/search?"
-                  f"&startAt={start_at}&maxResults={max_results}&jql=project={PROJECT_KEY}%20AND%20cf%5B{custom_field_custom_id}%5D%20is%20not%20empty"
+            domain_name + f"/rest/api/3/search?"
+            f"&startAt={start_at}&maxResults={max_results}&jql=project={PROJECT_KEY}%20AND%20cf%5B{custom_field_custom_id}%5D%20is%20not%20empty%20ORDER%20BY%20key%20DESC"
         )
     auth = HTTPBasicAuth(user_name, api_token)
     headers = {"Accept": "application/json"}
@@ -253,6 +254,9 @@ def update_issue(domain_name, user_name, api_token, issue_id, ari, existing_comp
 
 # Main Function
 def main():
+    # Record the start time
+    start_time = datetime.now()
+
     # Get the list of project's issue_type_ids
     issue_type_results = get_project_issue_type_ids(
         DOMAIN_NAME, USER_NAME, API_TOKEN, PROJECT_KEY
@@ -274,7 +278,16 @@ def main():
     compass_custom_field_customid = compass_formatted_custom_field.custom_id
     compass_custom_field_fieldid = compass_formatted_custom_field.field_id
 
-    # Step2: Get the list of related issues that contains the custom field values
+    # Step2: GET all related components details
+    components = get_related_components(issue_type_metadata_raw_result["fields"])
+    if len(components) == 0:
+        print(
+            f"The project: {PROJECT_KEY} doesn't have allowed compass components related to Compass custom fields."
+        )
+        quit()
+    formatted_components_dict = get_formatted_components(components)
+
+    # Step3: Get the list of related issues that contains the custom field values and update by groups
     # project_key is an optional field here.
     # By default, we set empty which means you can migrate the issues cross all projects.
     # If you want to migrate custom fields on single project,
@@ -284,56 +297,45 @@ def main():
     )
     issue_count = issues["total"]
 
-    if issue_count > 0:
-        print(
-            f"Successfully retrieved {issue_count} issues that have a Compass custom field "
-            f"value.\n"
-        )
-        formatted_issues_dict = get_formatted_issues(
-            issues["issues"], compass_custom_field_fieldid
-        )
-        # Loop through pagination requests to get all issues
-        number_loop = issue_count // max_results
-        for i in range(0, number_loop):
-            start_at = (i + 1) * max_results
-            cur_issues = get_related_issues(
-                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at
-            )
-            cur_formatted_issues_dict = get_formatted_issues(
-                cur_issues["issues"], compass_custom_field_fieldid
-            )
-            formatted_issues_dict.update(cur_formatted_issues_dict)
-    else:
+    if issue_count <= 0:
         print(
             f"The project: {PROJECT_KEY} doesn't have issues related to Compass custom fields."
         )
         quit()
-
-    # Step3: Get the list of related components' details
-    components = get_related_components(issue_type_metadata_raw_result["fields"])
-    if len(components) == 0:
+    else:
         print(
-            f"The project: {PROJECT_KEY} doesn't have allowed compass components related to Compass custom fields."
+            f"Successfully retrieved {issue_count} issues that have a Compass custom field value.\n"
         )
-        quit()
-    formatted_components_dict = get_formatted_components(components)
-
-    # Step4: Execute migration on the related issues
-    # Loop through Issues and update each issue with component value
-    for issue in formatted_issues_dict:
-        update_issue(
-            DOMAIN_NAME,
-            USER_NAME,
-            API_TOKEN,
-            issue,
-            formatted_issues_dict[issue].custom_field_value,
-            formatted_issues_dict[issue].existing_components,
-            formatted_components_dict,
-        )
+        number_loop = issue_count // max_results
+        for i in range(0, number_loop + 1):
+            start_at = i * max_results
+            cur_issues = get_related_issues(
+                DOMAIN_NAME, USER_NAME, API_TOKEN, compass_custom_field_customid, start_at)
+            cur_formatted_issues_dict = get_formatted_issues(
+                cur_issues["issues"], compass_custom_field_fieldid
+            )
+            # Loop through current group of issues and update each issue with component value
+            for issue in cur_formatted_issues_dict:
+                update_issue(
+                    DOMAIN_NAME,
+                    USER_NAME,
+                    API_TOKEN,
+                    issue,
+                    cur_formatted_issues_dict[issue].custom_field_value,
+                    cur_formatted_issues_dict[issue].existing_components,
+                    formatted_components_dict,
+                )
 
     print(
         f"Successfully copied issues’ Compass custom field values to their Components field in Project.\n"
     )
+    # Record the end time
+    end_time = datetime.now()
+    # Calculate the duration of the transaction
+    duration = end_time - start_time
+    print(f"Start Time: {start_time}")
+    print(f"End Time: {end_time}")
+    print(f"Duration: {duration}")
 
 
 if __name__ == "__main__":
@@ -350,8 +352,10 @@ if __name__ == "__main__":
     check_input(API_TOKEN, "apiToken")
     PROJECT_KEY = input("Enter your project key : ").strip()
     check_input(PROJECT_KEY, "projectKey")
-    preference_prompt = (f"Enter an option to select which issues to migrate:\n1. Only the issues in {PROJECT_KEY}. \n"
-                         f"2. All issues.\n Enter 1 or 2:  ")
+    preference_prompt = (
+        f"Enter an option to select which issues to migrate:\n1. Only the issues in {PROJECT_KEY}. \n"
+        f"2. All issues.\n Enter 1 or 2:  "
+    )
     PREFERENCE_FOR_ALL_OR_ONE_PROJECT = input(preference_prompt).strip()
 
     IS_ALL_OR_ONE_PROJECT = check_for_migration_preference(PREFERENCE_FOR_ALL_OR_ONE_PROJECT)
