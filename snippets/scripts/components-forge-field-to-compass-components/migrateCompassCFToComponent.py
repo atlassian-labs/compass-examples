@@ -205,7 +205,12 @@ def get_formatted_components(components):
 
 
 def update_issue(domain_name, user_name, api_token, issue_id, ari, existing_components, allowed_components_dict):
-    component_details = allowed_components_dict[ari]
+    try:
+        component_details = allowed_components_dict[ari]
+    except KeyError:
+        print(f"Couldn't copy issueId: {issue_id} issue's Compass custom field value to its Components field because of wrong component {ari}. "
+              f"Please try again later.")
+        return
 
     url = (
             domain_name
