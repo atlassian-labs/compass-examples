@@ -7,6 +7,8 @@ from requests.exceptions import HTTPError
 
 # Author: Huimin Pang
 
+DEFAULT_PAGE_SIZE = 50
+
 # Define Project Object
 class Project:
     def __init__(self, key, name, project_type_key, url):
@@ -30,24 +32,43 @@ def check_input(input_string, input_type):
         quit()
 
 
-def get_projects_with_pagination(domain_name, user_name, api_token, start_at, max_results):
-    url = domain_name + f"/rest/api/3/project/search?startAt={start_at}&maxResults={max_results}&orderBy=key&action=view"
+def get_software_projects_with_pagination(domain_name, user_name, api_token, start_at, max_results):
     auth = HTTPBasicAuth(user_name, api_token)
     headers = {
         "Accept": "application/json"
     }
+    isLast = False
+    projects_raw = []
+    offset = start_at
 
-    try:
-        response = requests.get(url, auth=auth, headers=headers)
-        if response.ok:
-            return response.json()
-    except HTTPError as http_err:
-        print(f"Couldn't retrieve projects for {domain_name} due to an HTTP error. Please try again.")
-        quit()
-    except Exception as err:
-        print(f"Couldn't retrieve projects for {domain_name} due to an error: {err}. Please try again.")
-        quit()
+    print('Loading projects . . .')
 
+    while not isLast:
+        try:
+            url = domain_name + f"/rest/api/3/project/search?type=software&startAt={offset}&maxResults={max_results}&orderBy=key&action=view"
+            response = requests.get(url, auth=auth, headers=headers, timeout=1)
+
+            if response.ok:
+                response_json = response.json()
+                isLast = response_json['isLast']
+                projects_raw += response_json['values']
+                offset += max_results
+                projects_loaded = len(projects_raw)
+                projects_total = response_json['total']
+
+                print(F"Loaded {projects_loaded} projects of {projects_total}")
+            else:
+                print(f"Unexpected HTTP response code {response.status_code} while retrieving projects for {domain_name}. Please try again.")
+                quit()
+            
+        except HTTPError as http_err:
+            print(f"Couldn't retrieve projects for {domain_name} due to an HTTP error: {http_err}. Please try again.")
+            quit()
+        except Exception as err:
+            print(f"Couldn't retrieve projects for {domain_name} due to an error: {err}. Please try again.")
+            quit()
+
+    return projects_raw
 
 def parse_project_raw_result(projects_raw_json):
     projects_info = {}
@@ -74,33 +95,18 @@ def get_projects_by_type(projects, type):
 
 # Main Function
 def main():
-    # Get the list of projects start with 0 and first 50 projects ordered by project key (can adjust startNum and
-    # maxResult),
-    project_raw_result = get_projects_with_pagination(DOMAIN_NAME, USER_NAME, API_TOKEN, 0, 50)
+    # Get the list of software projects
+    projects_raw = get_software_projects_with_pagination(DOMAIN_NAME, USER_NAME, API_TOKEN, 0, DEFAULT_PAGE_SIZE)
 
-    project_count = project_raw_result['total']
+    project_count = len(projects_raw)
     print(f"Successfully retrieved {project_count} projects for {DOMAIN_NAME}.\n")
-    is_last = project_raw_result['isLast']
-    if not is_last:
-        print("Your site has more than 50 projects, please modify the variables(startAt & maxResults) in function get_Projects.")
+
     if project_count > 0:
-        projects_dict = parse_project_raw_result(project_raw_result['values'])
+        projects_dict = parse_project_raw_result(projects_raw)
+        print_projects(projects_dict)
     else:
-        print("Your site doesn't have any projects.\n")
+        print(f"Your site doesn't have any project with software-type project.\n")
         quit()
-
-    # Get the list of software type of projects
-    TYPE = "software"
-    project_with_type_dict = get_projects_by_type(project_raw_result['values'], TYPE)
-    project_with_type_count = len(project_with_type_dict)
-    if project_with_type_count > 0:
-        print(f"There are {project_with_type_count} {TYPE}-type projects for {DOMAIN_NAME}.\n")
-        print("Note down the project keys. You’ll need these to migrate the Compass custom field value to the native "
-              "Components field.\n")
-        print_projects(project_with_type_dict)
-    else:
-        print(f"Your site doesn't have any project with {TYPE}-type project.\n")
-
 
 if __name__ == '__main__':
     # Ask user for the input

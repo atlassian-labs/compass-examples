@@ -27,16 +27,25 @@ pip3 install -r requirements.txt
 
 ## How to run locally
 First run file jiraProjectsInfo.py to collect your site's projects info. 
-Please save the projects' keys.
 ```shell
 python3 ./jiraProjectsInfo.py
 ```
 
-Second run file migrateCompassCFToComponent.py to migrate CompassCF to component field in all related issues in the project you want.  
+Please save the projects' keys. You can save keys by manually copying script output or redirecting the output to a file:
+```shell
+python3 ./jiraProjectsInfo.py > project_keys.txt
+```
+
+or copying the output to clipboard:
+```shell
+python3 ./jiraProjectsInfo.py | pbcopy
+```
+
+Second run file `migrateCompassCFToComponent.py` to migrate CompassCF to component field in all related issues in the project you want.
 ```shell
 python3 ./migrateCompassCFToComponent.py
 ```
 
 ## Other Useful Links
-https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-group-projects
-https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-group-issues
+- https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-group-projects
+- https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-group-issues
