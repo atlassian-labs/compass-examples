@@ -36,7 +36,7 @@
   },
   "scripts": {
     "compile": "tsc --noEmit",
-    "prepare": "husky install",
+    "prepare": "cd ../.. && husky install apps/sample-dataprovider-app-statuspage",
     "test": "jest",
     "lint": "yarn lint:eslint && yarn lint:prettier --check",
     "fix:prettier:and:lint": "yarn lint:prettier:fix && yarn lint:eslint:fix",
