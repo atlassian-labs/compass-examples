@@ -178,14 +178,31 @@ def component_url(component_ari):
     component_id = component_ari.split("/")[-1]
     return f"https://{DOMAIN_NAME}/compass/component/{component_id}"
 
+
+def is_valid_credentials():
+    url = f"/rest/api/3/myself"
+    try:
+        response = make_api_call(url, "GET")
+        if response is None:
+            return False
+        return True
+    except HTTPError as e:
+        if e.response.status_code == 401:
+            return False
+        raise e
+
 def main():
+    if not is_valid_credentials():
+        print("Invalid credentials provided. Exiting...")
+        return
+
     if not is_valid_project(PROJECT_KEY):
         print("This script only supports Company Managed Jira Software projects. "
               "This project either does not exist or its type is not supported. Exiting...")
         return
 
     if not does_project_have_compass_toggle_on():
-        print("Compass must be turned on for this project before running this script. Exiting...")
+        print("Compass Components must be turned on for this project before running this script. Exiting...")
         return
 
     print("Starting the migration process...")
