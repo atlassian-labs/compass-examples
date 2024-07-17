@@ -114,7 +114,8 @@ def create_compass_component(cloud_id,component):
         "cloudId": cloud_id,
         "input": {
             "name": component['name'],
-            "typeId": DEFAULT_COMPASS_COMPONENT_TYPE
+            "typeId": DEFAULT_COMPASS_COMPONENT_TYPE,
+            "labels": ["migrated-from-jira-component"]
         }
     }
 
@@ -126,8 +127,10 @@ def create_compass_component(cloud_id,component):
 def find_compass_component_in_jira(component_name):
     url = f"/rest/api/3/component?query={component_name}"
     response = make_api_call(url, "GET")
-    if len(response['values']) > 0 and 'ari' in response['values'][0]['ari']:
-        return response['values'][0]
+
+    filtered_response = [component for component in response['values'] if component['name'] == component_name]
+    if len(filtered_response) > 0 and 'ari' in filtered_response[0]['ari']:
+        return filtered_response[0]
     return None
 
 
@@ -169,6 +172,11 @@ def does_project_have_compass_toggle_on():
     except Exception as e:
         return False
 
+
+def component_url(component_ari):
+    # split the ari by / and get the last one
+    component_id = component_ari.split("/")[-1]
+    return f"https://{DOMAIN_NAME}/compass/component/{component_id}"
 
 def main():
     if not is_valid_project(PROJECT_KEY):
@@ -237,6 +245,8 @@ def main():
         print(f"Corresponding Compass components for following Jira components will be created:")
         for jira_component in jira_components_to_create_in_compass:
             print(f"{jira_component['name']}")
+        print(f"To view newly created Compass components, visit: "
+              f"https://{DOMAIN_NAME}/compass/components?label=migrated-from-jira-component")
 
     print("\n")
 
@@ -275,7 +285,7 @@ def main():
                 # remove the Jira component and add the compass component
                 update_issue_components(issue, component_id, compass_component['id'])
                 print(f"Updated issue {issue_key} by replacing Jira component {component['component']['name']} with "
-                      f"compass component with ari {compass_component['ari']}")
+                      f"compass component {component_url(compass_component['ari'])}")
         else:
             print(f"Issue not migrated for Jira component {component['name']}")
 
