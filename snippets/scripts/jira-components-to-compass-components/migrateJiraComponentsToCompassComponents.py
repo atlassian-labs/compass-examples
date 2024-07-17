@@ -32,12 +32,12 @@ query tenantInfo($hostNames: [String!]) {
 """
 
 
-def make_api_call(url, method, data=None, headers=None, no_response=False):
+def make_api_call(path, method, data=None, headers=None, no_response=False):
     # print(f"Making a {method} request to {url}")
     try:
         response = requests.request(
             method,
-            url,
+            f"https://{DOMAIN_NAME}{path}",
             auth=HTTPBasicAuth(USER_NAME, API_TOKEN),
             json=data,
             headers=headers
@@ -57,7 +57,7 @@ def make_api_call(url, method, data=None, headers=None, no_response=False):
 
 
 def make_gql_api_call(query, variables):
-    url = f"https://{DOMAIN_NAME}/gateway/api/graphql"
+    url = f"/gateway/api/graphql"
     headers = {
         'Content-Type': 'application/json'
     }
@@ -69,7 +69,7 @@ def make_gql_api_call(query, variables):
 
 
 def get_jira_component_list(project_key):
-    url = f"https://{DOMAIN_NAME}/rest/api/3/project/{project_key}/components"
+    url = f"/rest/api/3/project/{project_key}/components"
     response = make_api_call(url, "GET")
     return response
 
@@ -80,7 +80,7 @@ def get_related_issues_for_component(project_key, component):
     params = {'jql': f"project = {project_key} AND component = '{component_name}'"}
 
     start_at = 0
-    url = f"https://{DOMAIN_NAME}/rest/api/3/search?{urllib.parse.urlencode(params)}&startAt={start_at}"
+    url = f"/rest/api/3/search?{urllib.parse.urlencode(params)}&startAt={start_at}"
     all_issues = []
     while True:
         response = make_api_call(url, "GET")
@@ -90,7 +90,7 @@ def get_related_issues_for_component(project_key, component):
         all_issues.extend(issues)
         if start_at >= total:
             break
-        url = f"https://{DOMAIN_NAME}/rest/api/3/search?{urllib.parse.urlencode(params)}&startAt={start_at}"
+        url = f"/rest/api/3/search?{urllib.parse.urlencode(params)}&startAt={start_at}"
 
     # the jql api will return issues by component name
     # which can include compass components with same name as well
@@ -106,7 +106,7 @@ def get_tenant_info():
 
 
 def create_compass_component(cloud_id,component):
-    url = f"https://{DOMAIN_NAME}/gateway/api/graphql"
+    url = f"/gateway/api/graphql"
     headers = {
         'Content-Type': 'application/json'
     }
@@ -124,7 +124,7 @@ def create_compass_component(cloud_id,component):
 
 # at least one project must have compass ON
 def find_compass_component_in_jira(component_name):
-    url = f"https://{DOMAIN_NAME}/rest/api/3/component?query={component_name}"
+    url = f"/rest/api/3/component?query={component_name}"
     response = make_api_call(url, "GET")
     if len(response['values']) > 0 and 'ari' in response['values'][0]['ari']:
         return response['values'][0]
@@ -132,7 +132,7 @@ def find_compass_component_in_jira(component_name):
 
 
 def update_issue_components(issue, jira_component_id_to_remove, compass_component_id_to_add):
-    url = f"https://{DOMAIN_NAME}/rest/api/3/issue/{issue['key']}"
+    url = f"/rest/api/3/issue/{issue['key']}"
     # remove the Jira component and add the compass component
     existing_components = issue['fields']['components']
     components_after = [{'id': component['id']} for component in existing_components if component['id'] != jira_component_id_to_remove]
@@ -150,7 +150,7 @@ def update_issue_components(issue, jira_component_id_to_remove, compass_componen
 
 
 def is_valid_project(project_key):
-    url = f"https://{DOMAIN_NAME}/rest/api/3/project/{project_key}"
+    url = f"/rest/api/3/project/{project_key}"
     response = make_api_call(url, "GET")
     if response is None:
         return False
@@ -161,7 +161,7 @@ def is_valid_project(project_key):
 
 def does_project_have_compass_toggle_on():
     try:
-        url = f"https://{DOMAIN_NAME}/rest/api/3/project/{PROJECT_KEY}/properties/jira.global.components"
+        url = f"/rest/api/3/project/{PROJECT_KEY}/properties/jira.global.components"
         response = make_api_call(url, "GET")
         if response is None:
             return False
