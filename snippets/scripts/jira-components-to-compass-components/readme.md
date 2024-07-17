@@ -2,11 +2,13 @@
 
 Use this script to migrate your existing project components along with issues the components are used on to Compass.
 
-This script is idempotent. You can run it multiple times.
+**This script is idempotent**. You can run it multiple times.
 It will only create components that do not already exist in Compass.
 It will update the components field on issues and replace the Jira component on those issues with the corresponding Compass component matching the name. 
 By default, it will create Compass components with type SERVICE. 
 You can change the type of the components later from Compass UI.
+
+_In case of any failures due to rate limit or error, re-run the script to migrate remaining components._
 
 ## Prerequisites
 
