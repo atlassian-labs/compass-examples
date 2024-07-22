@@ -129,7 +129,7 @@ def find_compass_component_in_jira(component_name):
     response = make_api_call(url, "GET")
 
     filtered_response = [component for component in response['values'] if component['name'] == component_name]
-    if len(filtered_response) > 0 and 'ari' in filtered_response[0]['ari']:
+    if len(filtered_response) > 0 and 'ari' in filtered_response[0]:
         return filtered_response[0]
     return None
 
