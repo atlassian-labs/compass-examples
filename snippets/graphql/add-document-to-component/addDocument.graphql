@@ -1,0 +1,17 @@
+mutation addDocument($input: CompassAddDocumentInput!) {
+  compass {
+    addDocument(input: $input) @optIn(to: "compass-beta") {
+      success
+      errors {
+        message
+      }
+      documentDetails {
+        id
+        title
+        url
+        componentId
+        documentationCategoryId
+      }
+    }
+  }
+}
