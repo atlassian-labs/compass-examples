@@ -11,8 +11,8 @@ This script
 You'll need node and npm to run this script
 
 ```
-git clone https://github.com/gtchuinkam/compass-github-importer
-cd compass-gihub-importer
+git clone https://github.com/atlassian-labs/compass-examples
+cd snippets/scripts/compass-github-importer
 npm install
 ```
 
