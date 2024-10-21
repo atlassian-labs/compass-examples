@@ -48,7 +48,7 @@ New component for https://github.com/cloud-group3072118/timely ... would be adde
 ```
 
 
-By default, all repos will be added. If you see some repos you don't want to import during the dry-run? Modify `index.js` to add some filters.
+By default, all repos will be added. If you notice any repositories that you don't want to import during the dry run, you can modify `index.js` to add filters accordingly.
 
 ```javascript
 for (const repo of repos) {
