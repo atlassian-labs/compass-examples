@@ -88,17 +88,17 @@ async function putComponent(componentName, description, web_url) {
     }
 }
 
-async function listAllOrgs() {
-    let instanceOrganizations = []
+async function listAllProjects() {
+    let instanceProjects = []
     let page = 1;
     const perPage = 100; // Maximum items per page as allowed by GitHub Enterprise Server API
 
     while(true) {
         try {
-            const response = await axios.get(`${GITHUB_URL}/api/v3/organizations`, {
+            const response = await axios.get(`${BITBUCKET_URL}/rest/api/latest/projects`, {
                 params: {
-                    per_page: perPage,
-                    page: page,
+                    start: page,
+                    limit: perPage,
                 },
                 headers: {
                     'Authorization': `Bearer ${ACCESS_TOKEN}`,
@@ -106,22 +106,25 @@ async function listAllOrgs() {
                 },
             });
 
-            const orgs = response.data;
-            instanceOrganizations = [...orgs, ...instanceOrganizations];
+            const projects = response.data;
+            instanceProjects = [...projects, ...instanceProjects];
 
-            if(orgs.length < perPage) {
+            if(projects.length < perPage) {
                 break;
             }
 
             page++;
         } catch (error) {
-            console.error(`Error fetching organizations on page ${page}:`, error);
+            console.error(`Error fetching projects on page ${page}:`, error);
             break;
         }
     }
 
-    return instanceOrganizations;
+    console.log(instanceProjects)
+    return instanceProjects;
 }
+
+listAllProjects()
 
 async function listAllRepos() {
     const instanceOrganizations = await listAllOrgs()
@@ -171,4 +174,4 @@ async function listAllRepos() {
     }
 }
 
-listAllRepos()
+// listAllRepos()
