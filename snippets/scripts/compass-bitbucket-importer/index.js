@@ -91,27 +91,26 @@ async function putComponent(componentName, description, web_url) {
 async function listAllProjects() {
     let instanceProjects = []
     let page = 1;
-    const perPage = 100; // Maximum items per page as allowed by GitHub Enterprise Server API
+    const perPage = 100;
+    let isLastPage = false
 
-    while(true) {
+    while(!isLastPage && page < 4) {
         try {
-            const response = await axios.get(`${BITBUCKET_URL}/rest/api/latest/projects`, {
+            const response = await axios.get(`https://${BITBUCKET_URL}/rest/api/latest/projects`, {
                 params: {
                     start: page,
                     limit: perPage,
                 },
                 headers: {
-                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
-                    'Accept': 'application/vnd.github+json',
+                    'Authorization': `Basic ${ACCESS_TOKEN}`,
+                    'Accept': 'application/json',
                 },
             });
 
-            const projects = response.data;
+            const projects = response.data.values;
             instanceProjects = [...projects, ...instanceProjects];
 
-            if(projects.length < perPage) {
-                break;
-            }
+            isLastPage = response.data.isLastPage
 
             page++;
         } catch (error) {
@@ -120,34 +119,31 @@ async function listAllProjects() {
         }
     }
 
-    console.log(instanceProjects)
     return instanceProjects;
 }
 
-listAllProjects()
-
 async function listAllRepos() {
-    const instanceOrganizations = await listAllOrgs()
+    const instanceProjects = await listAllProjects()
     let page = 1;
-    const perPage = 100; // Maximum items per page as allowed by GitHub Enterprise Server API
+    const perPage = 100;
 
-    for (const org of instanceOrganizations) {
-        while(true) {
+    for (const project of instanceProjects) {
+        let isLastPage = false;
+        while(!isLastPage) {
             try {
                 // Fetch repos for the current page
-                const response = await axios.get(`${GITHUB_URL}/api/v3/orgs/${org.login}/repos`, {
+                const response = await axios.get(`https://${BITBUCKET_URL}/rest/api/latest/projects/${project.key}/repos`, {
                     params: {
-                        per_page: perPage,
-                        page: page,
+                        start: page,
+                        limit: perPage,
                     },
                     headers: {
-                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
-                        'Accept': 'application/vnd.github+json',
+                        'Authorization': `Basic ${ACCESS_TOKEN}`,
+                        'Accept': 'application/json',
                     },
                 });
 
-                const repos = response.data;
-
+                const repos = response.data.values;
                 // Inner loop: Iterate over repos on the current page
                 for (const repo of repos) {
                     // need a filter, add one here!
@@ -156,22 +152,20 @@ async function listAllRepos() {
                     if (repo.name !== 'hello-world')
                      */
                     if (true) {
-                        await putComponent(repo.name, repo.description || '', repo.html_url)
+                        await putComponent(repo.name, repo.description || '', `https://${BITBUCKET_URL}/projects/${project.key}/repos/${repo.slug}`)
                     }
                 }
 
                 //Check if we fetched all repos
-                if(repos.length < perPage) {
-                    break; //Break out of pagination loop
-                }
+                isLastPage = response.data.isLastPage;
 
                 page++;//Fetch the next page
             } catch (error) {
-                console.error(`Error fetching repositories for org: ${org.login} on page ${page}:`, error);
+                console.error(`Error fetching repositories for project: ${project.name} on page ${page}:`, error);
                 break;
             }
         }
     }
 }
 
-// listAllRepos()
+listAllRepos()
