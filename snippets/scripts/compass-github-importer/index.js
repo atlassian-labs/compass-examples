@@ -46,7 +46,7 @@ async function putComponent(componentName, description, web_url) {
     const maybeResults = response?.data?.compass?.searchComponents?.nodes;
 
     if (!Array.isArray(maybeResults)) {
-        console.error(`error fetching component: `, JSON.stringify(response));
+        console.error(`error fetching component for repo ${web_url} : `, JSON.stringify(response));
         throw new Error('Error fetching component');
     }
 
