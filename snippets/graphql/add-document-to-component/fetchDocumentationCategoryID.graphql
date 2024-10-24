@@ -1,0 +1,21 @@
+query fetchDocumentationCategories($cloudId: ID!, $first: Int, $after: String) {
+  compass {
+    documentationCategories(cloudId: $cloudId, first: $first, after: $after) @optIn(to: "compass-beta") {
+      nodes {
+        id
+        name
+      }
+      edges {
+        node {
+          id
+          name
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
