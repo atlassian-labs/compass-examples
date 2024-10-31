@@ -4,6 +4,7 @@ require('dotenv').config()
 
 const {GITHUB_URL, ACCESS_TOKEN, USER_EMAIL, TOKEN, TENANT_SUBDOMAIN, CLOUD_ID} = process.env
 const dryRun = process.env.DRY_RUN === "1"
+const createWebhooks = process.env.CREATE_WEBHOOKS === "1"
 
 const ATLASSIAN_GRAPHQL_URL = `https://${TENANT_SUBDOMAIN}.atlassian.net/gateway/api/graphql`;
 
@@ -124,77 +125,86 @@ async function listAllOrgs() {
 }
 
 async function createOrgWebhooks(orgs) {
-    for (const org of orgs) {
-        const webhookName = `${org.login} webhook`
-        const response = await makeGqlRequest({
-            query: `
+    if(!dryRun) {
+        for (const org of orgs) {
+            const webhookName = `${org.login} webhook`
+            const response = await makeGqlRequest({
+                query: `
         mutation MyMutation {
-  compass @optIn(to: "compass-beta"){
-    createIncomingWebhook(input: {cloudId: "${CLOUD_ID}", name: "${webhookName}", source: "github_enterprise_server"}) {
-      success
-      errors {
-        message
-        extensions {
-          statusCode
-          errorType
-        }
-      }
-      webhookDetails {
-        id
-      }
-    }
-  }
-}`,
-        });
-
-        const maybeId = response?.data.compass?.createIncomingWebhook?.webhookDetails?.id
-        const isSuccess = response?.data.compass?.createIncomingWebhook?.success
-
-        if (!isSuccess || !maybeId) {
-            console.error(`error creating incoming webhook: `, JSON.stringify(response));
-            throw new Error('Could not create incoming webhook');
-        }
-
-        console.log(chalk.green(`New compass incoming webhook for organization "${org.login}" created`))
-
-        const webhookId = maybeId.substring(maybeId.lastIndexOf('/') + 1)
-        const webhookUrl = `https://${TENANT_SUBDOMAIN}.atlassian.net/gateway/api/compass/v1/webhooks/${webhookId}`
-
-
-        const githubResponse = await axios.post(
-            `${GITHUB_URL}/api/v3/orgs/${org.login}/hooks`,
-            {
-                name:'web',
-                config: {
-                    url: `${webhookUrl}`,
-                    content_type: 'json',
-                },
-                events: ['deployment_status', 'workflow_run', 'push']
-            },
-            {
-                headers: {
-                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
-                    'Accept': 'application/vnd.github+json',
-                },
+          compass @optIn(to: "compass-beta"){
+            createIncomingWebhook(input: {cloudId: "${CLOUD_ID}", name: "${webhookName}", source: "github_enterprise_server"}) {
+              success
+              errors {
+                message
+                extensions {
+                  statusCode
+                  errorType
+                }
+              }
+              webhookDetails {
+                id
+              }
             }
-        );
+          }
+        }`,
+            });
 
-        if(githubResponse.status !== 201){
-            console.error(`error creating github webhook: `, JSON.stringify(response));
-            throw new Error('Could not create github webhook');
+            const maybeId = response?.data.compass?.createIncomingWebhook?.webhookDetails?.id
+            const isSuccess = response?.data.compass?.createIncomingWebhook?.success
+
+            if (!isSuccess || !maybeId) {
+                console.error(`error creating incoming webhook: `, JSON.stringify(response));
+                throw new Error('Could not create incoming webhook');
+            }
+
+            console.log(chalk.green(`New compass incoming webhook for organization "${org.login}" created`))
+
+            const webhookId = maybeId.substring(maybeId.lastIndexOf('/') + 1)
+            const webhookUrl = `https://${TENANT_SUBDOMAIN}.atlassian.net/gateway/api/compass/v1/webhooks/${webhookId}`
+
+
+            const githubResponse = await axios.post(
+                `${GITHUB_URL}/api/v3/orgs/${org.login}/hooks`,
+                {
+                    name: 'web',
+                    config: {
+                        url: `${webhookUrl}`,
+                        content_type: 'json',
+                    },
+                    events: ['deployment_status', 'workflow_run', 'push']
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'Accept': 'application/vnd.github+json',
+                    },
+                }
+            );
+
+            if (githubResponse.status !== 201) {
+                console.error(`error creating github webhook: `, JSON.stringify(response));
+                throw new Error('Could not create github webhook');
+            }
+
+            console.log(chalk.green(`New GitHub webhook for organization "${org.login}" created`))
         }
-
-        console.log(chalk.green(`New GitHub webhook for organization "${org.login}" created`))
+    } else {
+        for ( const org of orgs){
+            console.log(chalk.yellow(`New incoming webhook for organization "${org.login}" ... would be added (dry-run)`));
+        }
+        return;
     }
 }
 
 async function listAllRepos() {
     const instanceOrganizations = await listAllOrgs()
 
-    try {
-        await createOrgWebhooks(instanceOrganizations)
-    }catch (error){
-        console.error(`Error establishing webhooks for GitHub Organizations: `, error);
+    if(createWebhooks) {
+        try {
+            await createOrgWebhooks(instanceOrganizations)
+        } catch (error) {
+            console.error(`Error establishing webhooks for GitHub Organizations: `, error);
+        }
     }
 
     let page = 1;
