@@ -32,14 +32,14 @@ TENANT_SUBDOMAIN='<subdomain>'
 CLOUD_ID='<cloud uuid>'
 ```
 ## Create incoming webhooks
-Create incoming webhooks in order to enable the ingestion of events and metrics from your GitLub instance
+Create incoming webhooks in order to enable the ingestion of events and metrics from your GitLab instance
 ```
 CREATE_WEBHOOKS=1 node index.js
 ```
 Output:
 ```
-New GitLub webhook for group "myGroup1" created
-New GitLub webhook for group "myGroup2" created
+New GitLab webhook for group "myGroup1" created
+New GitLab webhook for group "myGroup2" created
 New component for https://gitlab.com/hyde.me/test_gb_less3_2 ... added hyde.me/test_gb_less3_2
 New component for https://gitlab.com/sachintomar009/reposetup ... added sachintomar009/reposetup
 New component for https://gitlab.com/brianwilliamaldous/api-la ... added brianwilliamaldous/api-la
