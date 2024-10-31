@@ -92,6 +92,112 @@ async function putComponent(componentName, description, web_url, readme) {
     }
 }
 
+async function listAllGroups() {
+    let instanceGroups = []
+    let page = 1;
+    const perPage = 100; // Maximum items per page as allowed by GitLab API
+
+    while (true) {
+        try {
+            // Fetch groups for the current page
+            const response = await axios.get(`${GITLAB_URL}/api/v4/groups`, {
+                params: {
+                    per_page: perPage,
+                    page: page,
+                    simple: true,
+                    top_level_only: true,
+                    // order_by: 'name',
+                    // sort: 'asc'
+                },
+                headers: {
+                    'Private-Token': ACCESS_TOKEN,
+                },
+            });
+
+            const groups = response.data;
+            instanceGroups = [...groups, ...instanceGroups];
+
+            // Check if we've reached the last page
+            if (groups.length < perPage) {
+                break; // Exit the pagination loop
+            }
+
+            page++; // Move to the next page
+        } catch (error) {
+            console.error(`Error fetching groups on page ${page}:`, error);
+            break;
+        }
+    }
+
+    if (!dryRun) {
+        for (const group of instanceGroups) {
+            const webhookName = `${group.name} webhook`
+            const response = await makeGqlRequest({
+                query: `
+                mutation MyMutation {
+                  compass @optIn(to: "compass-beta"){
+                    createIncomingWebhook(input: {cloudId: "${CLOUD_ID}", name: "${webhookName}", source: "github_enterprise_server"}) {
+                      success
+                      errors {
+                        message
+                        extensions {
+                          statusCode
+                          errorType
+                        }
+                      }
+                      webhookDetails {
+                        id
+                      }
+                    }
+                  }
+                }`,
+            });
+
+            const maybeId = response?.data.compass?.createIncomingWebhook?.webhookDetails?.id
+            const isSuccess = response?.data.compass?.createIncomingWebhook?.success
+
+            if (!isSuccess || !maybeId) {
+                console.error(`error creating incoming webhook: `, JSON.stringify(response));
+                throw new Error('Could not create incoming webhook');
+            }
+
+            console.log(chalk.green(`New compass incoming webhook for organization "${group.name}" created`))
+
+            const webhookId = maybeId.substring(maybeId.lastIndexOf('/') + 1)
+            const webhookUrl = `https://${TENANT_SUBDOMAIN}.atlassian.net/gateway/api/compass/v1/webhooks/${webhookId}`
+
+            const gitlabResponse = await axios.post(
+                `${GITLAB_URL}/api/v4/groups/${group.id}/hooks`,
+                {
+                    url: webhookUrl,
+                    name: 'web',
+                    push_events: true,
+                    deployment_events: true,
+                    pipeline_events: true,
+                },
+                {
+                    headers: {
+                        'Private-Token': ACCESS_TOKEN,
+                        'Accept': 'application/json',
+                    },
+                }
+            );
+
+            if (gitlabResponse.status !== 201) {
+                console.error(`error creating gitlab webhook: `, JSON.stringify(response));
+                throw new Error('Could not create gitlab webhook');
+            }
+
+            console.log(chalk.green(`New GitLab webhook for organization "${group.name}" created`))
+        }
+    } else {
+        for ( const group of instanceGroups){
+            console.log(chalk.yellow(`New incoming webhook for organization "${group.name}" ... would be added (dry-run)`));
+        }
+        return;
+    }
+}
+
 
 async function listAllProjects() {
     let instanceProjects = 0
@@ -142,4 +248,5 @@ async function listAllProjects() {
     }
 }
 
-listAllProjects();
+listAllGroups();
+// listAllProjects();
