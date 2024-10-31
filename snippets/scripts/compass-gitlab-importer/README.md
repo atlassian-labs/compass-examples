@@ -2,8 +2,9 @@
 
 This script
 1. Iterates over all your GitLab projects
-2. Creates Compass Components for each of them
-3. Connects your GitLab repo and Readme to that Component
+2. Can create incoming webhooks for each organization
+3. Creates Compass Components for each of them
+4. Connects your GitLab repo and Readme to that Component
 
 
 ## Install
@@ -30,6 +31,20 @@ TENANT_SUBDOMAIN='<subdomain>'
 # The UUID for your cloud site. This can be found in ARIs - look at the first uuid ari:cloud:compass:{cloud-uuid}
 CLOUD_ID='<cloud uuid>'
 ```
+## Create incoming webhooks
+Create incoming webhooks in order to enable the ingestion of events and metrics from your GitLub instance
+```
+CREATE_WEBHOOKS=1 node index.js
+```
+Output:
+```
+New GitLub webhook for group "myGroup1" created
+New GitLub webhook for group "myGroup2" created
+New component for https://gitlab.com/hyde.me/test_gb_less3_2 ... added hyde.me/test_gb_less3_2
+New component for https://gitlab.com/sachintomar009/reposetup ... added sachintomar009/reposetup
+New component for https://gitlab.com/brianwilliamaldous/api-la ... added brianwilliamaldous/api-la
+New component for https://gitlab.com/cloud-group3072118/timely ... added cloud-group3072118/timely
+```
 ## Do a dry run
 Preview what Repos the script will add to Compass. You don't need to wait until it's done - CTRL-C once you are comfortable.
 ```
@@ -38,7 +53,6 @@ DRY_RUN=1 node index.js
 
 Output:
 ```
-Pulled projects 0 - 100
 New component for https://gitlab.com/hyde.me/test_gb_less3_2 ... would be added hyde.me/test_gb_less3_2 (dry-run)
 New component for https://gitlab.com/sachintomar009/reposetup ... would be added sachintomar009/reposetup (dry-run)
 New component for https://gitlab.com/brianwilliamaldous/api-la ... would be added brianwilliamaldous/api-la (dry-run)
@@ -77,9 +91,3 @@ If your connection is interrupted, or you want to re-run after the initial impor
 ```
 Already added https://gitlab.com/VishnuprakashJ/home ... skipping
 ```
-
-## Next steps
-
-Once you're finished set up the on-prem webhook to link deployments, builds, etc to Compass. You only have to do this once (not once per Component) and Compass will associate the repo events with the Component they interact with.
-
-https://developer.atlassian.com/cloud/compass/components/create-incoming-webhooks/

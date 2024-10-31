@@ -5,6 +5,7 @@ require('dotenv').config()
 
 const {GITLAB_URL, ACCESS_TOKEN, USER_EMAIL, TOKEN, TENANT_SUBDOMAIN, CLOUD_ID} = process.env
 const dryRun = process.env.DRY_RUN === "1"
+const createWebhooks = process.env.CREATE_WEBHOOKS === "1"
 
 const ATLASSIAN_GRAPHQL_URL = `https://${TENANT_SUBDOMAIN}.atlassian.net/gateway/api/graphql`;
 
@@ -66,7 +67,7 @@ async function putComponent(componentName, description, web_url, readme) {
                 query: `
         mutation createComponent {
           compass @optIn(to: "compass-beta") {
-            createComponent(cloudId: "${CLOUD_ID}", input: {name: "${componentName}", description: "${description}" typeId: "OTHER", links: [{type: REPOSITORY, name: "Repository", url: "${web_url}"}${readmeLink}]}) {
+            createComponent(cloudId: "${CLOUD_ID}", input: {name: "${componentName}", description: "${description}" typeId: "SERVICE", links: [{type: REPOSITORY, name: "Repository", url: "${web_url}"}${readmeLink}]}) {
               success
               componentDetails {
                 id
@@ -92,7 +93,7 @@ async function putComponent(componentName, description, web_url, readme) {
     }
 }
 
-async function listAllGroups() {
+async function createOrgWebhooks() {
     let instanceGroups = []
     let page = 1;
     const perPage = 100; // Maximum items per page as allowed by GitLab API
@@ -136,7 +137,7 @@ async function listAllGroups() {
                 query: `
                 mutation MyMutation {
                   compass @optIn(to: "compass-beta"){
-                    createIncomingWebhook(input: {cloudId: "${CLOUD_ID}", name: "${webhookName}", source: "github_enterprise_server"}) {
+                    createIncomingWebhook(input: {cloudId: "${CLOUD_ID}", name: "${webhookName}", source: "gitlab_self_managed"}) {
                       success
                       errors {
                         message
@@ -170,7 +171,6 @@ async function listAllGroups() {
                 `${GITLAB_URL}/api/v4/groups/${group.id}/hooks`,
                 {
                     url: webhookUrl,
-                    name: 'web',
                     push_events: true,
                     deployment_events: true,
                     pipeline_events: true,
@@ -188,11 +188,11 @@ async function listAllGroups() {
                 throw new Error('Could not create gitlab webhook');
             }
 
-            console.log(chalk.green(`New GitLab webhook for organization "${group.name}" created`))
+            console.log(chalk.green(`New GitLab webhook for group "${group.name}" created`))
         }
     } else {
         for ( const group of instanceGroups){
-            console.log(chalk.yellow(`New incoming webhook for organization "${group.name}" ... would be added (dry-run)`));
+            console.log(chalk.yellow(`New incoming webhook for group "${group.name}" ... would be added (dry-run)`));
         }
         return;
     }
@@ -200,6 +200,14 @@ async function listAllGroups() {
 
 
 async function listAllProjects() {
+    if(createWebhooks) {
+        try {
+            await createOrgWebhooks()
+        } catch (error) {
+            console.error(`Error establishing webhooks for GitLab groups: `, error);
+        }
+    }
+
     let instanceProjects = 0
     let page = 1;
     const perPage = 100; // Maximum items per page as allowed by GitLab API
@@ -248,5 +256,4 @@ async function listAllProjects() {
     }
 }
 
-listAllGroups();
-// listAllProjects();
+listAllProjects()
