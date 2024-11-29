@@ -43,7 +43,7 @@ query fetchDocumentationCategories($cloudId: ID!, $first: Int, $after: String) {
 ```graphql
 {
   "cloudId": "YOUR-CLOUD-ID",
-  "first": 10,
+  "first": 4,
   "after": null
 }
 
