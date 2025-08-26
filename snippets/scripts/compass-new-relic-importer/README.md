@@ -1,10 +1,9 @@
-## Bootstrap your Compass Catalog with from a New Relic Account
+## Bootstrap your Compass Catalog from a New Relic Account
 
 This script
 
-1. Gets all the apps within your account
+1. Gets all the apps within your New Relic account
 2. Creates Compass Components for each of them
-3. Connects your New Relic app
 
 ## Install
 
