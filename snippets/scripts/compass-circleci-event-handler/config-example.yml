@@ -1,0 +1,83 @@
+jobs:
+  build:
+    docker:
+      - image: <your-image>
+    steps:
+      - checkout
+
+      # Notify Compass on success
+      - run:
+          name: Notify Compass (SUCCESSFUL)
+          when: on_success
+          command: |
+            curl \
+              --request POST \
+              --url "https://<name-of-your-site>.atlassian.net/gateway/api/compass/v1/events" \
+              --user "$USER-EMAIL:$TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data "{
+                \"cloudId\": \"$SITE-CLOUD-ID\",
+                \"componentId\": \"$COMPONENT-ID\",
+                \"event\": {
+                  \"build\": {
+                    \"displayName\": \"Build #$CIRCLE_BUILD_NUM on $CIRCLE_BRANCH\",
+                    \"description\": \"CircleCI build succeed\",
+                    \"url\": \"$CIRCLE_BUILD_URL\",
+                    \"lastUpdated\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+                    \"externalEventSourceId\": \"<component-external-event-source-id>\",
+                    \"updateSequenceNumber\": $CIRCLE_BUILD_NUM,
+                    \"buildProperties\": {
+                      \"state\": \"SUCCESSFUL\",
+                      \"startedAt\": \"$(date -u -d @$CIRCLE_WORKFLOW_STARTED_AT +'%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+                      \"completedAt\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+                      \"pipeline\": {
+                        \"pipelineId\": \"$CIRCLE_WORKFLOW_ID\",
+                        \"url\": \"$CIRCLE_BUILD_URL\",
+                        \"displayName\": \"Workflow $CIRCLE_WORKFLOW_ID\"
+                      }
+                    }
+                  }
+                }
+              }"
+
+      # Notify Compass on failure
+      - run:
+          name: Notify Compass (FAILED)
+          when: on_fail
+          command: |
+            curl \
+              --request POST \
+              --url "https://<name-of-your-site>.atlassian.net/gateway/api/compass/v1/events" \
+              --user "$USER-EMAIL:$TOKEN" \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --data "{
+                \"cloudId\": \"$CLOUD-ID\",
+                \"componentId\": \"$COMPONENT-ID\",
+                \"event\": {
+                  \"build\": {
+                    \"displayName\": \"Build #$CIRCLE_BUILD_NUM on $CIRCLE_BRANCH\",
+                    \"description\": \"CircleCI build failed\",
+                    \"url\": \"$CIRCLE_BUILD_URL\",
+                    \"lastUpdated\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+                    \"updateSequenceNumber\": $CIRCLE_BUILD_NUM,
+                    \"externalEventSourceId\": \"<component-external-event-source-id>\",
+                    \"buildProperties\": {
+                      \"state\": \"FAILED\",
+                      \"startedAt\": \"$(date -u -d @$CIRCLE_WORKFLOW_STARTED_AT +'%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+                      \"completedAt\": \"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",
+                      \"pipeline\": {
+                        \"pipelineId\": \"$CIRCLE_WORKFLOW_ID\",
+                        \"url\": \"$CIRCLE_BUILD_URL\",
+                        \"displayName\": \"Workflow $CIRCLE_WORKFLOW_ID\"
+                      }
+                    }
+                  }
+                }
+              }"
+
+workflows:
+  build_workflow:
+    jobs:
+      - build
