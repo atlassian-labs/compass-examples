@@ -1,0 +1,26 @@
+query getScorecard($scorecardARI: ID!) {
+  compass {
+    scorecard(id: $scorecardARI) {
+      __typename
+      ... on CompassScorecard {
+        id
+        name
+        description
+        ownerId
+        importance
+        componentType
+        criterias {
+          id
+          weight
+        }
+      }
+      ... on QueryError {
+        message
+        extensions {
+          statusCode
+          errorType
+        }
+      }
+    }
+  }
+}
